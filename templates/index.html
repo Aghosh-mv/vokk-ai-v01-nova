@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script>
+  (function(){
+    const saved = localStorage.getItem('vokk-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+</head>
+<body>
+
+<div id="app-wrap">
+
+  <!-- sidebar: conversation history (visible when logged in) -->
+  <aside id="sidebar">
+    <div class="sidebar-head">
+      <button id="new-chat-btn">+ new chat</button>
+    </div>
+    <div id="conv-list"></div>
+  </aside>
+
+  <!-- main content -->
+  <div id="main-col">
+
+    <header>
+      <button id="sidebar-toggle" title="conversation history">☰</button>
+      <div class="brand">
+        <span class="dot"></span>
+        <strong>vokk</strong>
+        <span class="sub">by nibra cyber</span>
+      </div>
+      <nav class="modes">
+        <button class="mode active" data-mode="chat">chat</button>
+        <button class="mode" data-mode="bignice">bignice ai</button>
+        <button class="mode" data-mode="image">image</button>
+      </nav>
+      <div class="picker">
+        <select id="provider" title="how vokk thinks">
+          <option value="auto" selected>auto</option>
+          <option value="thinking">deep thinking</option>
+          <option value="creative">creative / spicy</option>
+          <option value="fast">fast</option>
+        </select>
+        <button id="theme-toggle" title="toggle dark / light">◐</button>
+      </div>
+      <div id="auth-area"></div>
+    </header>
+
+    <main id="chat-pane" class="pane active">
+      <div id="messages"></div>
+      <div id="input-row">
+        <div class="tools">
+          <button data-tool="search" title="live web search">🔎</button>
+          <button data-tool="scrape" title="scrape a URL">🌐</button>
+          <button data-tool="crypto" title="live crypto price">💰</button>
+          <button data-tool="song"   title="recognize a song">🎵</button>
+          <button data-tool="image"  title="generate image (sign in required)">🖼️</button>
+          <input id="song-file" type="file" accept="audio/*" hidden>
+        </div>
+        <textarea id="input" rows="2" placeholder="talk to vokk…" spellcheck="true" autocomplete="off"></textarea>
+        <button id="send">send</button>
+      </div>
+    </main>
+
+    <main id="bignice-pane" class="pane">
+      <div class="bignice-head">
+        <h2>bignice ai — autonomous loop</h2>
+        <div>
+          <button id="bn-run">run one cycle</button>
+          <button id="bn-memory">show memory</button>
+        </div>
+      </div>
+      <pre id="bn-out">click "run one cycle" to fire the bignice agent. output streams here.</pre>
+    </main>
+
+    <main id="image-pane" class="pane">
+      <div class="img-head">
+        <h2>image generation</h2>
+        <p class="muted">sign in to generate images. fictional characters only.</p>
+      </div>
+      <div class="img-row">
+        <textarea id="img-prompt" rows="3" placeholder="describe what you want…"></textarea>
+        <button id="img-go">generate</button>
+      </div>
+      <div id="img-out"></div>
+    </main>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

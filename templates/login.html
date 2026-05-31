@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nova — sign in</title>
+<script>(function(){const s=localStorage.getItem('nova-theme')||'dark';document.documentElement.setAttribute('data-theme',s)})();</script>
+<style>
+:root[data-theme="dark"] {
+  --bg: #0c0c0d; --surface: #1a1a1d; --surface-2: #222226;
+  --line: #26262b; --ink: #ececee; --ink-soft: #b4b4b8; --muted: #6e6e74;
+  --accent: #c5b9f3; --accent-ink: #0e0e10; --danger: #ff8a8a;
+}
+:root[data-theme="light"] {
+  --bg: #faf9f6; --surface: #ffffff; --surface-2: #f0ede7;
+  --line: #e6e2d8; --ink: #1a1a1a; --ink-soft: #4a4a4a; --muted: #8a8580;
+  --accent: #6a4eb8; --accent-ink: #ffffff; --danger: #c44545;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,"SF Pro Text","Inter",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+.wrap{width:100%;max-width:380px;padding:24px 20px}
+.brand{
+  display:flex;align-items:center;gap:9px;
+  font-size:20px;font-weight:700;letter-spacing:-.025em;
+  margin-bottom:32px;justify-content:center;
+}
+.brand .dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 10px var(--accent),0 0 20px color-mix(in srgb,var(--accent) 50%,transparent);
+}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:28px 26px;
+}
+.tabs{display:flex;gap:2px;margin-bottom:24px;background:var(--bg);border-radius:10px;padding:3px}
+.tab{
+  flex:1;padding:8px 4px;background:transparent;
+  border:none;border-radius:8px;cursor:pointer;
+  font-size:13px;font-family:inherit;color:var(--muted);
+  transition:all .15s;
+}
+.tab.active{background:var(--surface);color:var(--ink);font-weight:500}
+.panel{display:none}
+.panel.active{display:block}
+label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;letter-spacing:.01em}
+input[type=email],input[type=password],input[type=text]{
+  width:100%;padding:11px 14px;
+  background:var(--bg);color:var(--ink);
+  border:1px solid var(--line);border-radius:10px;
+  font-size:14.5px;font-family:inherit;outline:none;
+  transition:border-color .15s;margin-bottom:14px;
+}
+input:focus{border-color:var(--muted)}
+input::placeholder{color:var(--muted)}
+.btn{
+  width:100%;padding:12px;
+  background:var(--accent);color:var(--accent-ink);
+  border:none;border-radius:10px;
+  font-size:14.5px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:opacity .15s;
+  margin-top:4px;
+}
+.btn:hover{opacity:.88}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{
+  width:100%;padding:10px;margin-top:10px;
+  background:transparent;color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:10px;
+  font-size:13.5px;font-family:inherit;cursor:pointer;
+  transition:all .15s;
+}
+.btn-ghost:hover{border-color:var(--muted);color:var(--ink)}
+.err{color:var(--danger);font-size:13px;margin-top:8px;min-height:20px}
+.success{color:#8adfb4;font-size:13px;margin-top:8px}
+.otp-row{display:flex;gap:8px;align-items:flex-end}
+.otp-row input{flex:1;margin-bottom:0}
+.otp-row button{
+  padding:11px 16px;background:var(--surface-2);color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:10px;font-size:13px;
+  font-family:inherit;cursor:pointer;white-space:nowrap;transition:all .15s;
+}
+.otp-row button:hover{border-color:var(--muted);color:var(--ink)}
+.dev-code-box{
+  background:color-mix(in srgb,var(--accent) 10%,transparent);
+  border:1px dashed color-mix(in srgb,var(--accent) 40%,transparent);
+  border-radius:8px;padding:10px 14px;font-size:13px;
+  color:var(--accent);margin:10px 0;text-align:center;
+  font-family:ui-monospace,Menlo,monospace;letter-spacing:.1em;font-size:18px;
+  font-weight:600;
+}
+.theme-btn{
+  position:fixed;top:16px;right:16px;
+  background:var(--surface);border:1px solid var(--line);
+  color:var(--ink-soft);width:32px;height:32px;border-radius:8px;
+  cursor:pointer;font-size:14px;
+}
+</style>
+</head>
+<body>
+<button class="theme-btn" id="theme-btn" title="toggle theme">◐</button>
+
+<div class="wrap">
+  <div class="brand">
+    <span class="dot"></span>
+    <span>nova</span>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-tab="signin">sign in</button>
+      <button class="tab" data-tab="register">create account</button>
+      <button class="tab" data-tab="otp">email code</button>
+    </div>
+
+    <!-- sign in -->
+    <div class="panel active" id="panel-signin">
+      <label>email</label>
+      <input type="email" id="si-email" placeholder="you@example.com" autocomplete="email">
+      <label>password</label>
+      <input type="password" id="si-pw" placeholder="••••••••" autocomplete="current-password">
+      <button class="btn" id="si-btn">sign in</button>
+      <div class="err" id="si-err"></div>
+    </div>
+
+    <!-- register -->
+    <div class="panel" id="panel-register">
+      <label>email</label>
+      <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
+      <label>password <span style="color:var(--muted);font-weight:400">(min 8 chars)</span></label>
+      <input type="password" id="reg-pw" placeholder="••••••••" autocomplete="new-password">
+      <label>confirm password</label>
+      <input type="password" id="reg-pw2" placeholder="••••••••" autocomplete="new-password">
+      <button class="btn" id="reg-btn">create account</button>
+      <div class="err" id="reg-err"></div>
+    </div>
+
+    <!-- OTP -->
+    <div class="panel" id="panel-otp">
+      <label>email</label>
+      <div class="otp-row" style="margin-bottom:14px">
+        <input type="email" id="otp-email" placeholder="you@example.com" autocomplete="email">
+        <button id="otp-send-btn">send code</button>
+      </div>
+      <div id="otp-code-area" style="display:none">
+        <label>6-digit code</label>
+        <input type="text" id="otp-code" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+        <div class="dev-code-box" id="dev-code" style="display:none"></div>
+      </div>
+      <button class="btn" id="otp-verify-btn" style="display:none">verify code</button>
+      <div class="err" id="otp-err"></div>
+      <div class="success" id="otp-ok"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// theme
+const themeBtn = document.getElementById('theme-btn');
+themeBtn.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('nova-theme', next);
+  themeBtn.textContent = next === 'dark' ? '◐' : '◑';
+});
+themeBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '◐' : '◑';
+
+// tabs
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+  });
+});
+
+function setErr(id, msg) { document.getElementById(id).textContent = msg; }
+function clearErr(id) { document.getElementById(id).textContent = ''; }
+
+// sign in
+document.getElementById('si-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('si-btn');
+  const email = document.getElementById('si-email').value.trim();
+  const pw = document.getElementById('si-pw').value;
+  clearErr('si-err');
+  if (!email || !pw) { setErr('si-err', 'fill in both fields'); return; }
+  btn.disabled = true; btn.textContent = 'signing in…';
+  const r = await fetch('/api/auth/login', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ email, password: pw })
+  });
+  const d = await r.json();
+  btn.disabled = false; btn.textContent = 'sign in';
+  if (d.ok) { window.location.href = '/'; }
+  else { setErr('si-err', d.error || 'something went wrong'); }
+});
+document.getElementById('si-pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('si-btn').click();
+});
+
+// register
+document.getElementById('reg-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('reg-btn');
+  const email = document.getElementById('reg-email').value.trim();
+  const pw = document.getElementById('reg-pw').value;
+  const pw2 = document.getElementById('reg-pw2').value;
+  clearErr('reg-err');
+  if (!email || !pw) { setErr('reg-err', 'fill in all fields'); return; }
+  if (pw !== pw2) { setErr('reg-err', 'passwords do not match'); return; }
+  if (pw.length < 8) { setErr('reg-err', 'password must be at least 8 characters'); return; }
+  btn.disabled = true; btn.textContent = 'creating…';
+  const r = await fetch('/api/auth/register', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ email, password: pw })
+  });
+  const d = await r.json();
+  btn.disabled = false; btn.textContent = 'create account';
+  if (d.ok) { window.location.href = '/'; }
+  else { setErr('reg-err', d.error || 'something went wrong'); }
+});
+
+// OTP
+document.getElementById('otp-send-btn').addEventListener('click', async () => {
+  const email = document.getElementById('otp-email').value.trim();
+  clearErr('otp-err');
+  document.getElementById('otp-ok').textContent = '';
+  if (!email) { setErr('otp-err', 'enter your email first'); return; }
+  const btn = document.getElementById('otp-send-btn');
+  btn.disabled = true; btn.textContent = 'sending…';
+  const r = await fetch('/api/auth/otp/request', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ email })
+  });
+  const d = await r.json();
+  btn.disabled = false; btn.textContent = 'resend';
+  if (d.ok) {
+    document.getElementById('otp-code-area').style.display = 'block';
+    document.getElementById('otp-verify-btn').style.display = 'block';
+    if (d.sent) {
+      document.getElementById('otp-ok').textContent = 'code sent — check your email';
+      document.getElementById('dev-code').style.display = 'none';
+    } else {
+      document.getElementById('dev-code').style.display = 'block';
+      document.getElementById('dev-code').textContent = d.dev_code;
+      document.getElementById('otp-ok').textContent = 'dev mode — code shown below (no SMTP configured)';
+    }
+  } else {
+    setErr('otp-err', d.error || 'send failed');
+  }
+});
+
+document.getElementById('otp-verify-btn').addEventListener('click', async () => {
+  const email = document.getElementById('otp-email').value.trim();
+  const code = document.getElementById('otp-code').value.trim();
+  clearErr('otp-err');
+  if (!code) { setErr('otp-err', 'enter the code'); return; }
+  const btn = document.getElementById('otp-verify-btn');
+  btn.disabled = true; btn.textContent = 'verifying…';
+  const r = await fetch('/api/auth/otp/verify', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ email, code })
+  });
+  const d = await r.json();
+  btn.disabled = false; btn.textContent = 'verify code';
+  if (d.ok) { window.location.href = '/'; }
+  else { setErr('otp-err', d.error || 'verification failed'); }
+});
+</script>
+</body>
+</html>
