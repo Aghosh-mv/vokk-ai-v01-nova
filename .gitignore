@@ -8,3 +8,4 @@ __pycache__/
 *.log
 conversations/
 generated_images/
+.DS_Store
