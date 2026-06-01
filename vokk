@@ -1,0 +1,63 @@
+#!/bin/bash
+# vokk — launcher for VOKK v01 / Nova web app
+# Usage:
+#   vokk --run     start v01 and open the browser
+#   vokk --stop    stop v01
+#   vokk --status  check v01
+
+PROJECT="/Users/tinkerspace/Documents/nibra-ai/human_ai"
+PORT="${VOKK_V01_PORT:-5555}"
+URL="http://127.0.0.1:${PORT}"
+PIDFILE="$HOME/.vokk/vokk-v01.pid"
+LOGFILE="$HOME/.vokk/vokk-v01.log"
+mkdir -p "$HOME/.vokk"
+
+is_up() { curl -s -o /dev/null -m 1 "$URL" 2>/dev/null; }
+
+case "${1:---run}" in
+  --run|run|"")
+    if is_up; then
+      echo "VOKK v01 is already awake at $URL"
+      open "$URL" 2>/dev/null
+      exit 0
+    fi
+    echo "Waking VOKK v01..."
+    cd "$PROJECT" || { echo "Project not found at $PROJECT"; exit 1; }
+    if [ ! -d "venv" ]; then
+      python3 -m venv venv
+      ./venv/bin/pip install -q -r requirements.txt
+    fi
+    PORT="$PORT" nohup ./venv/bin/python app.py > "$LOGFILE" 2>&1 &
+    echo $! > "$PIDFILE"
+    for i in $(seq 1 24); do
+      if is_up; then
+        echo "VOKK v01 is awake -> $URL"
+        open "$URL" 2>/dev/null
+        exit 0
+      fi
+      sleep 0.5
+    done
+    echo "VOKK v01 didn't come up in time. Last log lines:"
+    tail -n 20 "$LOGFILE"
+    exit 1
+    ;;
+  --stop|stop)
+    if [ -f "$PIDFILE" ]; then
+      kill "$(cat "$PIDFILE")" 2>/dev/null || true
+    fi
+    pkill -f "$PROJECT/app.py" 2>/dev/null || true
+    rm -f "$PIDFILE"
+    echo "VOKK v01 is asleep."
+    ;;
+  --status|status)
+    if is_up; then echo "VOKK v01 is awake at $URL"; else echo "VOKK v01 is asleep."; fi
+    ;;
+  -h|--help|help)
+    echo "vokk --run | --stop | --status"
+    ;;
+  *)
+    echo "Unknown option: $1"
+    echo "vokk --run | --stop | --status"
+    exit 1
+    ;;
+esac
